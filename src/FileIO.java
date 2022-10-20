@@ -1,12 +1,36 @@
-import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class FileIO {
-    public static ArrayList<String> readFileAsLines(String filePath) {
-        return null;
+    public static String[] readKeyFile(String filePath) {
+        String fileAsString;
+        String[] keyFile = null;
+
+        try {
+            fileAsString = new String(Files.readAllBytes(Paths.get(filePath)), Charset.defaultCharset());
+            keyFile = fileAsString.split(" - ");
+            if (keyFile.length != 3) {
+                throw new Exception("Key file format is not valid!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return keyFile;
     }
 
     public static byte[] readFileAsByteArray(String filePath) {
-        return null;
+        File file = new File(filePath);
+        byte[] content = null;
+        try {
+            content = Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
     }
 
     public static void writeFile(String outputFilePath) {
