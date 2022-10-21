@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -33,7 +34,15 @@ public class FileIO {
         return content;
     }
 
-    public static void writeFile(String outputFilePath) {
+    public static void writeFile(String outputFilePath, byte[] content) {
+        File yourFile = new File(outputFilePath);
 
+        try{
+            yourFile.createNewFile(); // if file already exists will do nothing
+            FileOutputStream oFile = new FileOutputStream(yourFile, false);
+            oFile.write(content);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }

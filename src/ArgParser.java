@@ -11,7 +11,7 @@ public class ArgParser {
     private String keyFilePath;
     private Algorithm algorithm;
     private Mode mode;
-    private static String argumentErrorMessage = "Arguments or order of arguments is incorrect. " +
+    private static final String argumentErrorMessage = "Arguments or order of arguments is incorrect. " +
             "Please provide the arguments in the correct format.\nCorrect argument format is: " +
             "−e −i inputFile.txt −o outFile.txt algorithm mode key_file.txt";
 

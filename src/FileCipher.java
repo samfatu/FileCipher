@@ -1,10 +1,12 @@
 
+
 public class FileCipher {
     public static void main(String[] args) throws Exception {
-        ArgParser parser = new ArgParser(args);
-        byte[] inFile = FileIO.readFileAsByteArray(parser.getInputFilePath());
-        String[] keyFile = FileIO.readKeyFile(parser.getKeyFilePath());
+        ArgParser arguments = new ArgParser(args);
+        Crypto crypto = new Crypto(arguments);
 
+
+        //printByteArrayAsText(inFile);
     }
 
     public static void printByteArrayAsText(byte[] array) {
