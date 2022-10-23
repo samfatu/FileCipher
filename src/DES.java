@@ -1,9 +1,6 @@
-import enums.Function;
 import enums.Mode;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -13,19 +10,27 @@ public class DES {
     private byte[] IV;
     private byte[] key;
     private byte[] nonce;
-    private Function function;
     private Mode mode;
     private String outputFilePath;
+    private Cipher cipher;
+    private byte[] XORed;
+    private ArrayList<byte[]> blocks;
 
-    public DES(byte[] input, String[] keys, Function function, Mode mode, String outputFilePath) {
+    public DES(byte[] input, String[] keys, Mode mode, String outputFilePath) {
         this.input = input;
-        this.function = function;
         this.mode = mode;
         this.outputFilePath = outputFilePath;
         // Takes the last 8 characters of the words in key file as key
         this.IV = keys[0].substring(keys[0].length() - 8).getBytes(StandardCharsets.UTF_8);
         this.key = keys[1].substring(keys[1].length() - 8).getBytes(StandardCharsets.UTF_8);
-        this.nonce = keys[2].substring(keys[2].length() - 8).getBytes(StandardCharsets.UTF_8);
+        this.nonce = keys[2].substring(keys[2].length() - 7).getBytes(StandardCharsets.UTF_8);
+
+        this.blocks = Crypto.divideToBlocks(this.input);
+        try {
+            this.cipher = Cipher.getInstance("DES/ECB/NoPadding");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void encrypt() {
@@ -51,23 +56,20 @@ public class DES {
                 decryptCBC();
                 break;
             case CFB:
+                decryptCFB();
                 break;
             case OFB:
                 decryptOFB();
                 break;
             case CTR:
+                decryptCTR();
                 break;
         }
     }
 
     // TODO: REMEMBER LOG
     private void encryptCBC() {
-        ArrayList<byte[]> blocks = Crypto.divideToBlocks(this.input);
-
         try {
-            Cipher cipher = Cipher.getInstance("DES/ECB/NoPadding");
-            byte[] XORed;
-
             for (byte[] block : blocks) {
                 XORed = Crypto.xor(block, this.IV);
 
@@ -86,13 +88,8 @@ public class DES {
     }
 
     private void decryptCBC() {
-        ArrayList<byte[]> blocks = Crypto.divideToBlocks(this.input);
-
         try {
-            Cipher cipher = Cipher.getInstance("DES/ECB/NoPadding");
-            byte[] XORed;
-
-            for (byte[] block : blocks) {
+            for (byte[] block : this.blocks) {
                 SecretKeySpec key = new SecretKeySpec(this.key, "DES");
                 cipher.init(Cipher.DECRYPT_MODE, key);
                 byte[] encrypted = cipher.doFinal(block);
@@ -109,17 +106,42 @@ public class DES {
     }
 
     private void encryptCFB() {
+        try {
+            for (byte[] block : this.blocks) {
+                SecretKeySpec key = new SecretKeySpec(this.key, "DES");
+                cipher.init(Cipher.ENCRYPT_MODE, key);
+                byte[] crypted = cipher.doFinal(this.IV);
 
+                XORed = Crypto.xor(block, crypted);
+                this.IV = XORed;
+
+                FileIO.writeFile(this.outputFilePath, XORed);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void decryptCFB() {
+        try {
+            for (byte[] block : this.blocks) {
+                SecretKeySpec key = new SecretKeySpec(this.key, "DES");
+                cipher.init(Cipher.ENCRYPT_MODE, key);
+                byte[] crypted = cipher.doFinal(this.IV);
+
+                XORed = Crypto.xor(block, crypted);
+                this.IV = block;
+
+                Crypto.writeDecryptedFile(this.outputFilePath, XORed);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void encryptOFB() {
-        ArrayList<byte[]> blocks = Crypto.divideToBlocks(this.input);
-
         try {
-            Cipher cipher = Cipher.getInstance("DES/ECB/NoPadding");
-            byte[] XORed;
-
-            for (byte[] block : blocks) {
+            for (byte[] block : this.blocks) {
                 SecretKeySpec key = new SecretKeySpec(this.key, "DES");
                 cipher.init(Cipher.ENCRYPT_MODE, key);
                 byte[] crypted = cipher.doFinal(this.IV);
@@ -129,26 +151,20 @@ public class DES {
 
                 FileIO.writeFile(this.outputFilePath, XORed);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void decryptOFB() {
-        ArrayList<byte[]> blocks = Crypto.divideToBlocks(this.input);
-
         try {
-            Cipher cipher = Cipher.getInstance("DES/ECB/NoPadding");
-            byte[] XORed;
-
-            for (byte[] block : blocks) {
+            for (byte[] block : this.blocks) {
                 SecretKeySpec key = new SecretKeySpec(this.key, "DES");
                 cipher.init(Cipher.ENCRYPT_MODE, key);
                 byte[] crypted = cipher.doFinal(this.IV);
 
                 XORed = Crypto.xor(block, crypted);
-                this.IV = crypted;
+                this.IV = block;
 
                 Crypto.writeDecryptedFile(this.outputFilePath, XORed);
             }
@@ -159,6 +175,48 @@ public class DES {
     }
 
     private void encryptCTR() {
+        byte counter = 0;
 
+        try {
+            byte[] combinedNonce;
+
+            for (byte[] block : this.blocks) {
+                combinedNonce = Crypto.combineNonceAndCounter(this.nonce, counter);
+                counter = (byte) (counter + 1); // TODO: 127den sonra?
+
+                SecretKeySpec key = new SecretKeySpec(this.key, "DES");
+                cipher.init(Cipher.ENCRYPT_MODE, key);
+                byte[] crypted = cipher.doFinal(combinedNonce);
+
+                XORed = Crypto.xor(block, crypted);
+
+                FileIO.writeFile(this.outputFilePath, XORed);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void decryptCTR() {
+        byte counter = 0;
+
+        try {
+            byte[] combinedNonce;
+
+            for (byte[] block : this.blocks) {
+                combinedNonce = Crypto.combineNonceAndCounter(this.nonce, counter);
+                counter = (byte) (counter + 1); // TODO: 127den
+
+                SecretKeySpec key = new SecretKeySpec(this.key, "DES");
+                cipher.init(Cipher.ENCRYPT_MODE, key);
+                byte[] decrypted = cipher.doFinal(combinedNonce);
+
+                XORed = Crypto.xor(block, decrypted);
+
+                Crypto.writeDecryptedFile(this.outputFilePath, XORed);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -90,9 +90,16 @@ public class Crypto {
         }
     }
 
+    public static byte[] combineNonceAndCounter(byte[] nonce, byte count) {
+        byte[] combined = new byte[nonce.length + 1];
+        System.arraycopy(nonce, 0, combined, 0, nonce.length);
+        combined[combined.length - 1] = count;
+        return combined;
+    }
+
     public void run() {
         if (arguments.getAlgorithm() == Algorithm.DES) {
-            DES des = new DES(inFile, keyFile, arguments.getFunction(), arguments.getMode(), arguments.getOutputFilePath());
+            DES des = new DES(inFile, keyFile, arguments.getMode(), arguments.getOutputFilePath());
 
             if (arguments.getFunction() == Function.ENC) {
                 des.encrypt();

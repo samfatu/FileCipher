@@ -6,7 +6,6 @@ public class FileCipher {
         Crypto crypto = new Crypto(arguments);
 
         crypto.run();
-        //printByteArrayAsText(inFile);
     }
 
     public static void printByteArrayAsText(byte[] array) {
