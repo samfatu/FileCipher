@@ -1,9 +1,11 @@
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class FileIO {
     public static String[] readKeyFile(String filePath) {
@@ -36,12 +38,11 @@ public class FileIO {
 
     public static void writeFile(String outputFilePath, byte[] content) {
         File yourFile = new File(outputFilePath);
-
         try{
             yourFile.createNewFile(); // if file already exists will do nothing
-            FileOutputStream oFile = new FileOutputStream(yourFile, false);
+            FileOutputStream oFile = new FileOutputStream(yourFile, true);
             oFile.write(content);
-        }catch (IOException e){
+        } catch (IOException e){
             e.printStackTrace();
         }
     }

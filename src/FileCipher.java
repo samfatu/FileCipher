@@ -5,13 +5,14 @@ public class FileCipher {
         ArgParser arguments = new ArgParser(args);
         Crypto crypto = new Crypto(arguments);
 
-
+        crypto.run();
         //printByteArrayAsText(inFile);
     }
 
     public static void printByteArrayAsText(byte[] array) {
         for (byte b : array) {
-            System.out.print((char) b);
+            System.out.print(b + " ");
         }
+        System.out.println();
     }
 }

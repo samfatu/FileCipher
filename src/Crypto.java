@@ -1,6 +1,7 @@
 import enums.Algorithm;
 import enums.Function;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -59,13 +60,34 @@ public class Crypto {
                if (i < reminder) {
                    padding[i] = input[size * 8 + i];
                } else {
-                   padding[i] = '0';
+                   // We used the least used delimiter character in ASCII according to this: https://stackoverflow.com/a/41555511
+                   padding[i] = 31;
                }
             }
             blocks.add(padding);
         }
 
         return blocks;
+    }
+
+    public static boolean byteArrayContainsPadding(byte[] array) {
+        for (byte b : array) {
+            if (b == 31) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void writeDecryptedFile(String outputFilePath, byte[] block) {
+        if (Crypto.byteArrayContainsPadding(block)) {
+            String str = new String(block, StandardCharsets.UTF_8);
+            str = str.replace(Character.toString((char) 31), "");
+
+            FileIO.writeFile(outputFilePath, str.getBytes(StandardCharsets.UTF_8));
+        } else {
+            FileIO.writeFile(outputFilePath, block);
+        }
     }
 
     public void run() {
