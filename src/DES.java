@@ -1,3 +1,5 @@
+import enums.Algorithm;
+import enums.Function;
 import enums.Mode;
 
 import javax.crypto.Cipher;
@@ -10,16 +12,18 @@ public class DES {
     private byte[] IV;
     private byte[] key;
     private byte[] nonce;
+    private String inputFilePath;
     private Mode mode;
     private String outputFilePath;
     private Cipher cipher;
     private byte[] XORed;
     private ArrayList<byte[]> blocks;
 
-    public DES(byte[] input, String[] keys, Mode mode, String outputFilePath) {
+    public DES(byte[] input, String[] keys, Mode mode, String outputFilePath, String inputFilePath) {
         this.input = input;
         this.mode = mode;
         this.outputFilePath = outputFilePath;
+        this.inputFilePath = inputFilePath;
         // Takes the last 8 characters of the words in key file as key
         this.IV = keys[0].substring(keys[0].length() - 8).getBytes(StandardCharsets.UTF_8);
         this.key = keys[1].substring(keys[1].length() - 8).getBytes(StandardCharsets.UTF_8);
@@ -34,43 +38,66 @@ public class DES {
     }
 
     public void encrypt() {
+        long startTime = 0;
+        long endTime = 0;
+
         switch (this.mode) {
             case CBC:
+                startTime = System.nanoTime();
                 encryptCBC();
+                endTime = System.nanoTime();
                 break;
             case CFB:
+                startTime = System.nanoTime();
                 encryptCFB();
+                endTime = System.nanoTime();
                 break;
             case OFB:
+                startTime = System.nanoTime();
                 encryptOFB();
+                endTime = System.nanoTime();
                 break;
             case CTR:
+                startTime = System.nanoTime();
                 encryptCTR();
+                endTime = System.nanoTime();
                 break;
         }
+        FileIO.logFunction(this.inputFilePath, this.outputFilePath, Function.ENC, Algorithm.DES, this.mode, (endTime - startTime) / 1000000);
     }
 
     public void decrypt() {
+        long startTime = 0;
+        long endTime = 0;
+
         switch (this.mode) {
             case CBC:
+                startTime = System.nanoTime();
                 decryptCBC();
+                endTime = System.nanoTime();
                 break;
             case CFB:
+                startTime = System.nanoTime();
                 decryptCFB();
+                endTime = System.nanoTime();
                 break;
             case OFB:
+                startTime = System.nanoTime();
                 decryptOFB();
+                endTime = System.nanoTime();
                 break;
             case CTR:
+                startTime = System.nanoTime();
                 decryptCTR();
+                endTime = System.nanoTime();
                 break;
         }
+        FileIO.logFunction(this.inputFilePath, this.outputFilePath, Function.DEC, Algorithm.DES, this.mode, (endTime - startTime) / 1000000);
     }
 
-    // TODO: REMEMBER LOG
     private void encryptCBC() {
         try {
-            for (byte[] block : blocks) {
+            for (byte[] block : this.blocks) {
                 XORed = Crypto.xor(block, this.IV);
 
                 SecretKeySpec key = new SecretKeySpec(this.key, "DES");
@@ -96,7 +123,7 @@ public class DES {
 
                 XORed = Crypto.xor(encrypted, this.IV);
 
-                Crypto.writeDecryptedFile(this.outputFilePath, XORed);
+                FileIO.writeDecryptedFile(this.outputFilePath, XORed);
 
                 this.IV = block;
             }
@@ -132,7 +159,7 @@ public class DES {
                 XORed = Crypto.xor(block, crypted);
                 this.IV = block;
 
-                Crypto.writeDecryptedFile(this.outputFilePath, XORed);
+                FileIO.writeDecryptedFile(this.outputFilePath, XORed);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -164,9 +191,9 @@ public class DES {
                 byte[] crypted = cipher.doFinal(this.IV);
 
                 XORed = Crypto.xor(block, crypted);
-                this.IV = block;
+                this.IV = crypted;
 
-                Crypto.writeDecryptedFile(this.outputFilePath, XORed);
+                FileIO.writeDecryptedFile(this.outputFilePath, XORed);
             }
 
         } catch (Exception e) {
@@ -213,7 +240,7 @@ public class DES {
 
                 XORed = Crypto.xor(block, decrypted);
 
-                Crypto.writeDecryptedFile(this.outputFilePath, XORed);
+                FileIO.writeDecryptedFile(this.outputFilePath, XORed);
             }
         } catch (Exception e) {
             e.printStackTrace();

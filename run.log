@@ -1,0 +1,15 @@
+i.txt o.txt enc 3DES CBC 101131292
+o.txt i.txt dec 3DES CBC 104669375
+i.txt o.txt enc 3DES CBC 96967458
+o.txt d.txt dec DES CBC 105
+o.txt d.txt dec 3DES CBC 106372250
+i.txt o.txt enc 3DES CFB 104864417
+o.txt d.txt dec 3DES CFB 102993708
+i.txt o.txt enc 3DES OFB 99718375
+o.txt d.txt dec 3DES OFB 99684584
+i.txt o.txt enc 3DES CTR 122513500
+o.txt d.txt dec 3DES CTR 103237041
+o.txt d.txt dec 3DES CTR 109
+o.txt d.txt dec 3DES CTR 113
+o.txt d.txt dec 3DES CTR 101108083000000
+o.txt d.txt dec 3DES CTR 102

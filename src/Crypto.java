@@ -79,16 +79,7 @@ public class Crypto {
         return false;
     }
 
-    public static void writeDecryptedFile(String outputFilePath, byte[] block) {
-        if (Crypto.byteArrayContainsPadding(block)) {
-            String str = new String(block, StandardCharsets.UTF_8);
-            str = str.replace(Character.toString((char) 31), "");
 
-            FileIO.writeFile(outputFilePath, str.getBytes(StandardCharsets.UTF_8));
-        } else {
-            FileIO.writeFile(outputFilePath, block);
-        }
-    }
 
     public static byte[] combineNonceAndCounter(byte[] nonce, byte count) {
         byte[] combined = new byte[nonce.length + 1];
@@ -99,7 +90,7 @@ public class Crypto {
 
     public void run() {
         if (arguments.getAlgorithm() == Algorithm.DES) {
-            DES des = new DES(inFile, keyFile, arguments.getMode(), arguments.getOutputFilePath());
+            DES des = new DES(inFile, keyFile, arguments.getMode(), arguments.getOutputFilePath(), arguments.getInputFilePath());
 
             if (arguments.getFunction() == Function.ENC) {
                 des.encrypt();
@@ -107,10 +98,12 @@ public class Crypto {
                 des.decrypt();
             }
         } else if (arguments.getAlgorithm() == Algorithm.THREE_DES) {
+            THREE_DES three_des = new THREE_DES(inFile, keyFile, arguments.getMode(), arguments.getOutputFilePath(), arguments.getInputFilePath());
+
             if (arguments.getFunction() == Function.ENC) {
-                // call 3des enc
+                three_des.encrypt();
             } else if (arguments.getFunction() == Function.DEC) {
-                // call 3des dec
+                three_des.decrypt();
             }
         }
     }
