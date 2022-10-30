@@ -45,6 +45,7 @@ public class FileCipher {
                     Files.delete(fileToDeletePath);
                 }
 
+                crypto.run();
                 System.out.println(algo + "-" + mode + ": " + (total / 1000));
             }
         }
