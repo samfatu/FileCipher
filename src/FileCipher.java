@@ -4,14 +4,13 @@ import java.nio.file.Paths;
 
 public class FileCipher {
     public static void main(String[] args) throws Exception {
-        /*ArgParser arguments = new ArgParser(new String[]{"-e", "-i", "i.txt", "-o", "o.txt", "3DES", "CTR", "keyfile.txt"});
-        //ArgParser arguments = new ArgParser(args);
+        ArgParser arguments = new ArgParser(args);
         Crypto crypto = new Crypto(arguments);
 
         crypto.run();
-*/
-        runTests("-e", "", "o");
-        runTests("-d", "o", "d");
+
+        //runTests("-e", "", "o");
+        //runTests("-d", "o", "d");
     }
 
     // Input file name must be "i.txt" to use this function.
@@ -37,7 +36,8 @@ public class FileCipher {
                 crypto = new Crypto(arguments);
                 long start;
                 long total = 0;
-                for (int i = 0; i < 1000; i++) {
+                int iter = 100;
+                for (int i = 0; i < iter; i++) {
                     start = System.nanoTime();
                     crypto.run();
                     total += System.nanoTime() - start;
@@ -46,7 +46,7 @@ public class FileCipher {
                 }
 
                 crypto.run();
-                System.out.println(algo + "-" + mode + ": " + (total / 1000));
+                System.out.println(algo + "-" + mode + " runtime: " + (total / iter) / 1000000);
             }
         }
     }
