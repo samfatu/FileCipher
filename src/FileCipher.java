@@ -1,4 +1,6 @@
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileCipher {
     public static void main(String[] args) throws Exception {
@@ -25,7 +27,6 @@ public class FileCipher {
         // Testing for every mode and every algorithm
         for (String mode : modes) {
             for (String algo : algorithms) {
-                System.out.println("Starting " + algo + " " + mode);
                 arguments = new ArgParser(new String[]{
                         encDec,
                         "-i", encDec.equals("-e") ? "i.txt" : inFilePrefix + algo + mode + ".txt",
@@ -34,8 +35,17 @@ public class FileCipher {
                         mode,
                         "keyfile.txt"});
                 crypto = new Crypto(arguments);
-                crypto.run();
-                System.out.println("Ending " + algo + " " + mode);
+                long start;
+                long total = 0;
+                for (int i = 0; i < 1000; i++) {
+                    start = System.nanoTime();
+                    crypto.run();
+                    total += System.nanoTime() - start;
+                    Path fileToDeletePath = Paths.get(outFilePrefix + algo + mode + ".txt");
+                    Files.delete(fileToDeletePath);
+                }
+
+                System.out.println(algo + "-" + mode + ": " + (total / 1000));
             }
         }
     }
