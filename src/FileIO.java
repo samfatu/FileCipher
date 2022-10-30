@@ -40,9 +40,12 @@ public class FileIO {
     public static void writeFile(String outputFilePath, byte[] content) {
         File yourFile = new File(outputFilePath);
         try{
-            yourFile.createNewFile(); // if file already exists will do nothing
+            if (!yourFile.exists()) {
+                yourFile.createNewFile(); // if file already exists will do nothing
+            }
             FileOutputStream oFile = new FileOutputStream(yourFile, true);
             oFile.write(content);
+            oFile.close();
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -59,7 +62,7 @@ public class FileIO {
         }
     }
 
-    public static void logFunction(String inputFilePath, String outputFilePath, Function function, Algorithm algorithm, Mode mode, long ms) {
+    public static void writeToLogFile(String inputFilePath, String outputFilePath, Function function, Algorithm algorithm, Mode mode, long ms) {
         String content = inputFilePath + " " +
                 outputFilePath + " " +
                 (function == Function.ENC ? "enc " : "dec ") +

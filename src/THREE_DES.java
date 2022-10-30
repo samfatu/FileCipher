@@ -6,7 +6,6 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.SecretKeySpec;
-import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.util.ArrayList;
@@ -70,7 +69,7 @@ public class THREE_DES {
                 endTime = System.nanoTime();
                 break;
         }
-        FileIO.logFunction(this.inputFilePath, this.outputFilePath, Function.ENC, Algorithm.THREE_DES, this.mode, (endTime - startTime) / 1000000);
+        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.ENC, Algorithm.THREE_DES, this.mode, (endTime - startTime));
     }
 
     public void decrypt() {
@@ -99,10 +98,10 @@ public class THREE_DES {
                 endTime = System.nanoTime();
                 break;
         }
-        FileIO.logFunction(this.inputFilePath, this.outputFilePath, Function.DEC, Algorithm.THREE_DES, this.mode, (endTime - startTime) / 1000000);
+        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.DEC, Algorithm.THREE_DES, this.mode, (endTime - startTime));
     }
 
-    private byte[] threeDES(byte[] input, int firstAndLastOpmode, int middleOpmode) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    private byte[] threeDES(byte[] input, int firstAndLastOpmode, int middleOpmode) throws Exception {
         SecretKeySpec key1 = new SecretKeySpec(this.key1, "DES");
         cipher.init(firstAndLastOpmode, key1);
         byte[] firstStep = cipher.doFinal(input);

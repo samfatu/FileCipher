@@ -63,7 +63,7 @@ public class DES {
                 endTime = System.nanoTime();
                 break;
         }
-        FileIO.logFunction(this.inputFilePath, this.outputFilePath, Function.ENC, Algorithm.DES, this.mode, (endTime - startTime) / 1000000);
+        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.ENC, Algorithm.DES, this.mode, (endTime - startTime));
     }
 
     public void decrypt() {
@@ -92,7 +92,7 @@ public class DES {
                 endTime = System.nanoTime();
                 break;
         }
-        FileIO.logFunction(this.inputFilePath, this.outputFilePath, Function.DEC, Algorithm.DES, this.mode, (endTime - startTime) / 1000000);
+        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.DEC, Algorithm.DES, this.mode, (endTime - startTime));
     }
 
     private void encryptCBC() {

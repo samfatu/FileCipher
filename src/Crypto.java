@@ -1,7 +1,6 @@
 import enums.Algorithm;
 import enums.Function;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -28,18 +27,11 @@ public class Crypto {
         return arguments;
     }
 
-    // TODO: PADDING
-    // TODO: circularPos kaldır
     public static byte[] xor(final byte[] input, final byte[] key) {
         byte[] result = new byte[input.length];
 
-        int circularPos = 0;
         for (int i = 0; i < input.length; i++) {
-            result[i] = (byte) (input[i] ^ key[circularPos]);
-            circularPos++;
-            if (circularPos >= key.length) {
-                circularPos = 0;
-            }
+            result[i] = (byte) (input[i] ^ key[i]);
         }
 
         return result;
@@ -54,8 +46,8 @@ public class Crypto {
             blocks.add(Arrays.copyOfRange(input, i * 8, (i +1) * 8));
         }
 
-        byte[] padding = new byte[8];
         if (reminder != 0) {
+            byte[] padding = new byte[8];
             for (int i = 0; i < padding.length; i++) {
                if (i < reminder) {
                    padding[i] = input[size * 8 + i];
@@ -71,15 +63,13 @@ public class Crypto {
     }
 
     public static boolean byteArrayContainsPadding(byte[] array) {
-        for (byte b : array) {
-            if (b == 31) {
+        for (int i = array.length - 1; i >= 0; i--) {
+            if (array[i] == 31) {
                 return true;
             }
         }
         return false;
     }
-
-
 
     public static byte[] combineNonceAndCounter(byte[] nonce, byte count) {
         byte[] combined = new byte[nonce.length + 1];
