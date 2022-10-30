@@ -9,8 +9,10 @@ public class Crypto {
     private String[] keyFile;
     private ArgParser arguments;
 
+    // Takes arguments as a Data Transport Object
     public Crypto(ArgParser arguments) {
         this.arguments = arguments;
+        // Reads given files and assigns its contents to the fields
         this.inFile = FileIO.readFileAsByteArray(arguments.getInputFilePath());
         this.keyFile = FileIO.readKeyFile(arguments.getKeyFilePath());
     }
@@ -27,6 +29,7 @@ public class Crypto {
         return arguments;
     }
 
+    // XOR's given 64 bit input and secret key
     public static byte[] xor(final byte[] input, final byte[] key) {
         byte[] result = new byte[input.length];
 
@@ -37,6 +40,7 @@ public class Crypto {
         return result;
     }
 
+    // Divides the given input array to 64 bit blocks and returns a list of blocks
     public static ArrayList<byte[]> divideToBlocks(byte[] input) {
         ArrayList<byte[]> blocks = new ArrayList<>();
         int size = input.length / 8;
@@ -62,6 +66,7 @@ public class Crypto {
         return blocks;
     }
 
+    // Checks if given array contains padding value that we determined and returns true if it contains
     public static boolean byteArrayContainsPadding(byte[] array) {
         for (int i = array.length - 1; i >= 0; i--) {
             if (array[i] == 31) {
@@ -71,6 +76,7 @@ public class Crypto {
         return false;
     }
 
+    // Combines 56 bit nonce value and given 8 bit counter value and returns 64 bit array
     public static byte[] combineNonceAndCounter(byte[] nonce, byte count) {
         byte[] combined = new byte[nonce.length + 1];
         System.arraycopy(nonce, 0, combined, 0, nonce.length);
@@ -78,6 +84,7 @@ public class Crypto {
         return combined;
     }
 
+    // Creates necessary objects for preferred cryption algorithm and runs them
     public void run() {
         if (arguments.getAlgorithm() == Algorithm.DES) {
             DES des = new DES(inFile, keyFile, arguments.getMode(), arguments.getOutputFilePath(), arguments.getInputFilePath());

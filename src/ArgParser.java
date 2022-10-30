@@ -15,6 +15,7 @@ public class ArgParser {
             "Please provide the arguments in the correct format.\nCorrect argument format is: " +
             "−e −i inputFile.txt −o outFile.txt algorithm mode key_file.txt";
 
+    // Parses the given Command Line Arguments to necessary parts
     public ArgParser(String[] args) throws Exception {
         if (args.length != 8) {
             throw new Exception(argumentErrorMessage);
