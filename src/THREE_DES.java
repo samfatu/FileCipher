@@ -2,12 +2,9 @@ import enums.Algorithm;
 import enums.Function;
 import enums.Mode;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
 import java.util.ArrayList;
 
 public class THREE_DES {
@@ -30,7 +27,6 @@ public class THREE_DES {
         this.inputFilePath = inputFilePath;
         // Takes the last 8 characters of the words in key file as key
         this.IV = keys[0].substring(keys[0].length() - 8).getBytes(StandardCharsets.UTF_8);
-        // TODO: key2 shuffle algo
         this.key1 = keys[1].substring(keys[1].length() - 8).getBytes(StandardCharsets.UTF_8);
         this.key2 = keys[1].substring(0, keys[1].length() - 8).getBytes(StandardCharsets.UTF_8);
         this.nonce = keys[2].substring(keys[2].length() - 7).getBytes(StandardCharsets.UTF_8);
@@ -69,7 +65,7 @@ public class THREE_DES {
                 endTime = System.nanoTime();
                 break;
         }
-        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.ENC, Algorithm.THREE_DES, this.mode, (endTime - startTime));
+        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.ENC, Algorithm.THREE_DES, this.mode, (endTime - startTime) / 1000000);
     }
 
     public void decrypt() {
@@ -98,7 +94,7 @@ public class THREE_DES {
                 endTime = System.nanoTime();
                 break;
         }
-        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.DEC, Algorithm.THREE_DES, this.mode, (endTime - startTime));
+        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.DEC, Algorithm.THREE_DES, this.mode, (endTime - startTime) / 1000000);
     }
 
     private byte[] threeDES(byte[] input, int firstAndLastOpmode, int middleOpmode) throws Exception {

@@ -54,7 +54,7 @@ public class FileIO {
     public static void writeDecryptedFile(String outputFilePath, byte[] block) {
         if (Crypto.byteArrayContainsPadding(block)) {
             String str = new String(block, StandardCharsets.UTF_8);
-            str = str.replace(Character.toString((char) 31), "");
+            str = str.replace(Character.toString((char) 31), "");   // Replace the padding value with empty char
 
             FileIO.writeFile(outputFilePath, str.getBytes(StandardCharsets.UTF_8));
         } else {

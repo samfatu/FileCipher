@@ -63,7 +63,7 @@ public class DES {
                 endTime = System.nanoTime();
                 break;
         }
-        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.ENC, Algorithm.DES, this.mode, (endTime - startTime));
+        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.ENC, Algorithm.DES, this.mode, (endTime - startTime) / 1000000);
     }
 
     public void decrypt() {
@@ -92,7 +92,7 @@ public class DES {
                 endTime = System.nanoTime();
                 break;
         }
-        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.DEC, Algorithm.DES, this.mode, (endTime - startTime));
+        FileIO.writeToLogFile(this.inputFilePath, this.outputFilePath, Function.DEC, Algorithm.DES, this.mode, (endTime - startTime) / 1000000);
     }
 
     private void encryptCBC() {
@@ -108,7 +108,6 @@ public class DES {
 
                 this.IV = crypted;
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -209,7 +208,7 @@ public class DES {
 
             for (byte[] block : this.blocks) {
                 combinedNonce = Crypto.combineNonceAndCounter(this.nonce, counter);
-                counter = (byte) (counter + 1); // TODO: 127den sonra?
+                counter = (byte) (counter + 1);
 
                 SecretKeySpec key = new SecretKeySpec(this.key, "DES");
                 cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -232,7 +231,7 @@ public class DES {
 
             for (byte[] block : this.blocks) {
                 combinedNonce = Crypto.combineNonceAndCounter(this.nonce, counter);
-                counter = (byte) (counter + 1); // TODO: 127den
+                counter = (byte) (counter + 1);
 
                 SecretKeySpec key = new SecretKeySpec(this.key, "DES");
                 cipher.init(Cipher.ENCRYPT_MODE, key);
